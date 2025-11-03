@@ -1,4 +1,3 @@
-# max_chaos_full.py
 import streamlit as st
 import threading
 import random
@@ -9,8 +8,8 @@ st.title("MAX CHAOS Meme Apocalypse 🐔💨")
 st.write("Press START for full chaos. STOP ends it immediately. Everything is simulated and safe.")
 
 # Initialize session state
-if "stop_flag" not in st.session_state:
-    st.session_state.stop_flag = True  # initially stopped
+if "running" not in st.session_state:
+    st.session_state.running = False
 
 # Placeholders
 placeholder_main = st.empty()
@@ -26,7 +25,7 @@ TEMPLATES = ["When you","Me when","POV:","Nobody:","Also me:","Expectation:","Re
 ACTIONS = ["open the project","run the build","see 0 tests fail","your dog walks on your keyboard","the coffee kicks in","your Wi-Fi dies"]
 SUBJECTS = ["in production","at 3 AM","during standup","before breakfast","right after deployment"]
 
-def generate_memes(n=10000):
+def generate_memes(n=2000):
     memes = []
     for _ in range(n):
         meme = f"{random.choice(TEMPLATES)} {random.choice(ACTIONS)} {random.choice(SUBJECTS)} 💀🤣🔥"
@@ -39,9 +38,9 @@ def fake_update():
     time.sleep(2)
 
 def meme_flood():
-    memes = generate_memes(2000)
+    memes = generate_memes()
     for meme in memes:
-        if st.session_state.stop_flag: return
+        if not st.session_state.running: return
         placeholder_memes.markdown(f"<div style='color:{random.choice(COLORS)}; font-size:{random.randint(14,28)}px;'>{meme}</div>", unsafe_allow_html=True)
         time.sleep(0.02)
     placeholder_memes.empty()
@@ -57,16 +56,15 @@ def browser_history_prank():
         "2025-08-18 20:40 — ultra-goofy-meme-factory.example"
     ]
     for entry in fake_entries:
-        if st.session_state.stop_flag: return
+        if not st.session_state.running: return
         placeholder_main.markdown(f"<div style='color:{random.choice(COLORS)}; padding:5px;'>{entry} (fake)</div>", unsafe_allow_html=True)
         time.sleep(3.2)
     placeholder_main.markdown(f"<div style='color:{random.choice(COLORS)}; padding:10px;'>...just kidding. Relax — this is a joke 😎</div>", unsafe_allow_html=True)
 
 def chicken_chorus():
     placeholder_main.markdown(f"<div style='color:{random.choice(COLORS)}; font-size:28px;'>🐔🐔🐔 Chicken jokes galore 🐔🐔🐔</div>", unsafe_allow_html=True)
-    # flying spinning chickens
     for _ in range(20):  # multiple frames
-        if st.session_state.stop_flag: return
+        if not st.session_state.running: return
         chickens = []
         for _ in range(50):
             left = random.randint(0, 80)
@@ -81,30 +79,28 @@ def chicken_chorus():
 
 def max_volume_67():
     for _ in range(10):
-        if st.session_state.stop_flag: return
+        if not st.session_state.running: return
         placeholder_main.markdown(f"<div style='color:{random.choice(COLORS)}; font-size:48px; font-weight:900;'>🔊 MAX VOLUME 67 🔊</div>", unsafe_allow_html=True)
         time.sleep(0.1)
 
 # Main prank loop
 def prank_loop():
     pranks = [fake_update, meme_flood, browser_history_prank, chicken_chorus, max_volume_67]
-    while not st.session_state.stop_flag:
+    while st.session_state.running:
         prank = random.choice(pranks)
         prank()
-        time.sleep(random.uniform(cycle_min/1000, cycle_max/1000))
+        time.sleep(random.uniform(0.2,0.5))
 
 # Buttons
 start = st.button("START")
 stop = st.button("STOP")
 
-if start:
-    if st.session_state.stop_flag:
-        st.session_state.stop_flag = False
-        threading.Thread(target=prank_loop, daemon=True).start()
+if start and not st.session_state.running:
+    st.session_state.running = True
+    threading.Thread(target=prank_loop, daemon=True).start()
 
 if stop:
-    st.session_state.stop_flag = True
-    placeholder_main.markdown(f"<div style='color:#ffffff; font-size:28px;'>Stopped. Press START to chaos again.</div>", unsafe_allow_html=True)
+    st.session_state.running = False
+    placeholder_main.markdown(f"<div style='color:white; font-size:28px;'>Stopped. Press START to chaos again.</div>", unsafe_allow_html=True)
     placeholder_memes.empty()
     placeholder_chickens.empty()
-
