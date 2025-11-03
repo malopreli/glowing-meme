@@ -104,3 +104,4 @@ if stop:
     placeholder_main.markdown(f"<div style='color:white; font-size:28px;'>Stopped. Press START to chaos again.</div>", unsafe_allow_html=True)
     placeholder_memes.empty()
     placeholder_chickens.empty()
+
