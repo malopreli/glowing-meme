@@ -3,24 +3,36 @@ import threading
 import random
 import time
 
-st.set_page_config(page_title="MAX CHAOS Chicken Meme Apocalypse", page_icon="🔥🐔", layout="wide")
+st.set_page_config(page_title="MAX CHAOS Meme Apocalypse", page_icon="🔥🐔", layout="wide")
 st.title("MAX CHAOS Meme Apocalypse 🐔💨")
-st.write("Press START for full chaos. STOP ends it immediately. Everything is simulated and safe.")
+st.write("Memes start automatically. Press START for full chaos. STOP ends it.")
 
-# Initialize session state
+# -----------------------
+# Session state
+# -----------------------
 if "running" not in st.session_state:
     st.session_state.running = False
+if "memes_running" not in st.session_state:
+    st.session_state.memes_running = False
+if "thread_pranks" not in st.session_state:
+    st.session_state.thread_pranks = None
 
+# -----------------------
 # Placeholders
+# -----------------------
 placeholder_main = st.empty()
 placeholder_memes = st.empty()
 placeholder_chickens = st.empty()
 
+# -----------------------
 # Goofy colors
+# -----------------------
 COLORS = ['#ff0077','#00ff88','#33ccff','#ffcc00','#ff4444','#7a5cff',
           '#ff6600','#00ffee','#ff00ff','#ff99cc','#00ccff','#ffbb33','#88ff00','#ff0066','#cc00ff']
 
+# -----------------------
 # Meme generation
+# -----------------------
 TEMPLATES = ["When you","Me when","POV:","Nobody:","Also me:","Expectation:","Reality:","Plot twist:"]
 ACTIONS = ["open the project","run the build","see 0 tests fail","your dog walks on your keyboard","the coffee kicks in","your Wi-Fi dies"]
 SUBJECTS = ["in production","at 3 AM","during standup","before breakfast","right after deployment"]
@@ -32,7 +44,9 @@ def generate_memes(n=2000):
         memes.append(meme)
     return memes
 
+# -----------------------
 # Pranks
+# -----------------------
 def fake_update():
     placeholder_main.markdown(f"<div style='color:{random.choice(COLORS)}; font-size:32px; font-weight:900;'>Installing updates...</div>", unsafe_allow_html=True)
     time.sleep(2)
@@ -40,7 +54,8 @@ def fake_update():
 def meme_flood():
     memes = generate_memes()
     for meme in memes:
-        if not st.session_state.running: return
+        if not st.session_state.memes_running:
+            return
         placeholder_memes.markdown(f"<div style='color:{random.choice(COLORS)}; font-size:{random.randint(14,28)}px;'>{meme}</div>", unsafe_allow_html=True)
         time.sleep(0.02)
     placeholder_memes.empty()
@@ -83,46 +98,33 @@ def max_volume_67():
         placeholder_main.markdown(f"<div style='color:{random.choice(COLORS)}; font-size:48px; font-weight:900;'>🔊 MAX VOLUME 67 🔊</div>", unsafe_allow_html=True)
         time.sleep(0.1)
 
+# -----------------------
 # Main prank loop
+# -----------------------
 def prank_loop():
-    pranks = [fake_update, meme_flood, browser_history_prank, chicken_chorus, max_volume_67]
+    pranks = [fake_update, browser_history_prank, chicken_chorus, max_volume_67]
     while st.session_state.running:
         prank = random.choice(pranks)
         prank()
         time.sleep(random.uniform(0.2,0.5))
 
-# Buttons
-import streamlit as st
-import threading
-import time
-import random
+# -----------------------
+# Start memes automatically
+# -----------------------
+if not st.session_state.memes_running:
+    st.session_state.memes_running = True
+    threading.Thread(target=meme_flood, daemon=True).start()
 
-st.title("MAX CHAOS Meme App")
-
-# Initialize session state
-if "running" not in st.session_state:
-    st.session_state.running = False
-if "thread" not in st.session_state:
-    st.session_state.thread = None
-
-placeholder_main = st.empty()
-
-# Example chaos function
-def chaos_loop():
-    while st.session_state.running:
-        color = random.choice(["red","green","blue","purple","orange"])
-        placeholder_main.markdown(f"<div style='color:{color}; font-size:32px;'>💀 CHAOS 💀</div>", unsafe_allow_html=True)
-        time.sleep(0.2)
-        placeholder_main.empty()
-
-# Buttons
+# -----------------------
+# Buttons for chaos pranks
+# -----------------------
 if st.button("START"):
     if not st.session_state.running:
         st.session_state.running = True
-        # Start thread once and store in session state
-        st.session_state.thread = threading.Thread(target=chaos_loop, daemon=True)
-        st.session_state.thread.start()
+        st.session_state.thread_pranks = threading.Thread(target=prank_loop, daemon=True)
+        st.session_state.thread_pranks.start()
 
 if st.button("STOP"):
     st.session_state.running = False
-    placeholder_main.markdown("<div style='color:white; font-size:28px;'>Stopped. Press START again.</div>", unsafe_allow_html=True)
+    placeholder_main.markdown("<div style='color:white; font-size:28px;'>Stopped. Press START to chaos again.</div>", unsafe_allow_html=True)
+    placeholder_chickens.empty()
