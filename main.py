@@ -92,16 +92,37 @@ def prank_loop():
         time.sleep(random.uniform(0.2,0.5))
 
 # Buttons
-start = st.button("START")
-stop = st.button("STOP")
+import streamlit as st
+import threading
+import time
+import random
 
-if start and not st.session_state.running:
-    st.session_state.running = True
-    threading.Thread(target=prank_loop, daemon=True).start()
+st.title("MAX CHAOS Meme App")
 
-if stop:
+# Initialize session state
+if "running" not in st.session_state:
     st.session_state.running = False
-    placeholder_main.markdown(f"<div style='color:white; font-size:28px;'>Stopped. Press START to chaos again.</div>", unsafe_allow_html=True)
-    placeholder_memes.empty()
-    placeholder_chickens.empty()
+if "thread" not in st.session_state:
+    st.session_state.thread = None
 
+placeholder_main = st.empty()
+
+# Example chaos function
+def chaos_loop():
+    while st.session_state.running:
+        color = random.choice(["red","green","blue","purple","orange"])
+        placeholder_main.markdown(f"<div style='color:{color}; font-size:32px;'>💀 CHAOS 💀</div>", unsafe_allow_html=True)
+        time.sleep(0.2)
+        placeholder_main.empty()
+
+# Buttons
+if st.button("START"):
+    if not st.session_state.running:
+        st.session_state.running = True
+        # Start thread once and store in session state
+        st.session_state.thread = threading.Thread(target=chaos_loop, daemon=True)
+        st.session_state.thread.start()
+
+if st.button("STOP"):
+    st.session_state.running = False
+    placeholder_main.markdown("<div style='color:white; font-size:28px;'>Stopped. Press START again.</div>", unsafe_allow_html=True)
