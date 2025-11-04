@@ -3,8 +3,8 @@ import threading
 import random
 import time
 
-st.set_page_config(page_title="winn 1000 dolla dolla", page_icon="💀", layout="wide")
-st.markdown("<h1 style='text-align:center;color:#ff00aa;'>💀 MAX CHAOS 💀</h1>", unsafe_allow_html=True)
+st.set_page_config(page_title="winn 1000 dolla dolla", page_icon="", layout="wide")
+st.markdown("<h1 style='text-align:center;color:#ff00aa;'> MAX CHAOS </h1>", unsafe_allow_html=True)
 
 # --------------------------
 # SESSION STATE
@@ -38,7 +38,7 @@ def meme_flood():
     while True:
         if not st.session_state.memes_running:
             break
-        meme = f"{random.choice(TEMPLATES)} {random.choice(ACTIONS)} {random.choice(SUBJECTS)} 💀🤣🔥"
+        meme = f"{random.choice(TEMPLATES)} {random.choice(ACTIONS)} {random.choice(SUBJECTS)} "
         meme_box.markdown(
             f"<div style='color:{random.choice(COLORS)}; font-size:{random.randint(18,30)}px;'>{meme}</div>",
             unsafe_allow_html=True
